@@ -5,6 +5,7 @@ import { env } from '../lib/env'
  * Error handler middleware.
  * Uses status code from error if present.
  */
+
 export async function errorHandler(ctx, next) {
   try {
     await next()
@@ -19,4 +20,5 @@ export async function errorHandler(ctx, next) {
     }
     logger.error('Error in request', err)
   }
+  logger.info('Params: ' + JSON.stringify(ctx.params, null, 2))
 }

@@ -1,85 +1,54 @@
 import { throws } from 'smid'
-import TodoService from '../todo-service'
+import Api from '../my-api.js'
 
 // This test only verify invariants, not interaction with dependencies.
 // That is tested with integration tests.
 describe('TodoService', () => {
-  describe('find', () => {
-    it('can find todos', async () => {
-      const { service, todos } = setup()
-      expect(await service.find()).toEqual(todos)
-    })
-  })
-
   describe('get', () => {
     it('throws when not found', async () => {
-      const { service, todos } = setup()
-      expect((await throws(service.get('nonexistent'))).message).toMatch(
-        /not found/
-      )
-
-      expect(await service.get('1')).toEqual(todos[0])
-    })
-  })
-
-  describe('create', () => {
-    it('throws when no payload is given', async () => {
-      const { service } = setup()
-      const err = await throws(service.create())
-      expect(err.message).toMatch(/payload/)
-    })
-
-    it('throws when title is invalid', async () => {
-      const { service } = setup()
-      expect((await throws(service.create())).message).toMatch(/payload/)
-      expect((await throws(service.create({}))).message).toMatch(/title/)
-    })
-
-    it('removes unknown props', async () => {
-      const { service } = setup()
+      const { service, devicedata } = setup()
       expect(
-        await service.create({ title: 'test', removeme: 'please' })
-      ).toEqual({
-        title: 'test'
-      })
+        (await throws(service.get("iddoesn'tmatter", 'notauser'))).message
+      ).toMatch(/not found/)
+
+      expect(await service.get(1, 1)).toEqual(devicedata[1])
     })
   })
 
-  describe('update', () => {
-    it('throws when todo does not exist', async () => {
+  describe('push', () => {
+    it('throws when no id', async () => {
       const { service } = setup()
-      expect((await throws(service.update('nonexisting', {}))).message).toMatch(
-        /nonexisting/
+      expect((await throws(service.push())).message).toMatch(
+        /No device id supplied/
       )
-
-      await service.update('1', { title: 'hello' })
     })
-  })
 
-  describe('remove', () => {
-    it('throws when todo does not exist', async () => {
+    it('throws when no payload', async () => {
       const { service } = setup()
-      expect((await throws(service.remove('nonexisting'))).message).toMatch(
-        /nonexisting/
+      expect((await throws(service.push(1, null))).message).toMatch(
+        /No payload given/
       )
-
-      await service.remove('1')
     })
   })
 })
 
 function setup() {
-  const todos = [
-    { id: '1', title: 'Todo 1', completed: true },
-    { id: '2', title: 'Todo 2', completed: false }
-  ]
+  const devicedata = {
+    1: [
+      { timestamp: 123, location: [1, 2] },
+      { timestamp: 124, location: [2, 9] },
+      { timestamp: 125, location: [3, 7] }
+    ],
+    2: [
+      { timestamp: 567, location: [1, 2] },
+      { timestamp: 568, location: [2, 9] },
+      { timestamp: 569, location: [3, 7] }
+    ]
+  }
   // Mock store
   const store = {
-    find: jest.fn(async () => [...todos]),
-    get: jest.fn(async id => todos.find(x => x.id === id)),
-    create: jest.fn(async data => ({ ...data })),
-    update: jest.fn(async (id, data) => ({ ...data })),
-    remove: jest.fn(async id => undefined)
+    get: jest.fn(async (user, deviceid) => devicedata[deviceid]),
+    push: jest.fn(async (deviceid, locationdata) => [...locationdata])
   }
-  return { service: new TodoService(store), store, todos }
+  return { service: new Api(store), store, devicedata }
 }

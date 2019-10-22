@@ -16,13 +16,10 @@ export async function apiHelper() {
     catch: catchAndLog, // Useful for logging failing requests
     client,
     // Add your app-specific methods here.
-    findTodos: params =>
-      client.get(`/todos`, { params }).then(assertStatus(200)),
-    getTodo: id => client.get(`/todos/${id}`).then(assertStatus(200)),
-    createTodo: data => client.post('/todos', data).then(assertStatus(201)),
-    updateTodo: (id, data) =>
-      client.patch(`/todos/${id}`, data).then(assertStatus(200)),
-    removeTodo: id => client.delete(`/todos/${id}`).then(assertStatus(204))
+    getLocationData: (user, deviceid) =>
+      client.get(`/test/${user}/${deviceid}`).then(assertStatus(200)),
+    pushLocationData: (deviceid, locationdata) =>
+      client.post(`/test/${deviceid}`, locationdata).then(assertStatus(201))
   }
 }
 
@@ -36,9 +33,7 @@ export function assertStatus(status) {
   return async function statusAsserter(resp) {
     if (resp.status !== status) {
       throw new Error(
-        `Expected ${status} but got ${resp.status}: ${resp.request.method} ${
-          resp.request.path
-        }`
+        `Expected ${status} but got ${resp.status}: ${resp.request.method} ${resp.request.path}`
       )
     }
     return resp.data
@@ -48,9 +43,7 @@ export function assertStatus(status) {
 function catchAndLog(err) {
   if (err.response) {
     console.error(
-      `Error ${err.response.status} in request ${err.response.request.method} ${
-        err.response.request.path
-      }`,
+      `Error ${err.response.status} in request ${err.response.request.method} ${err.response.request.path}`,
       err.response.data
     )
   }

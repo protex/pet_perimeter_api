@@ -3,44 +3,51 @@
  * For demo purposes, gets the logger injected.
  */
 export default function createTodoStore(logger) {
-  let __todos = []
-  let __ids = 1
+  // All the data for gps coordinates
+  let __locationData = {}
+
+  // Maps devices to users
+  let __deviceTable = {}
 
   return {
-    async find() {
-      logger.debug('Finding todos')
-      return [...__todos]
+    /*
+     * Function: addDevice
+     * Description: Adds a device to the device table
+     */
+    async addDevice(deviceid, user) {
+      __deviceTable = Object.assign({}, __deviceTable, { [deviceid]: user })
     },
 
-    async get(id) {
-      logger.debug(`Getting todo with id ${id}`)
-      const found = __todos.find(x => x.id === id.toString())
-      if (!found) {
+    /*
+     * Function: get
+     * Description: Gets location data corresponding
+     *  to a particular deviceid
+     */
+    async get(user, deviceid) {
+      logger.debug(`Getting data for ${deviceid}`)
+      if (!(deviceid in __deviceTable) && !(deviceid in __locationData)) {
         return null
+      } else {
+        return __locationData[deviceid]
       }
-      return { ...found }
     },
 
-    async create(data) {
-      const todo = {
-        ...data,
-        id: (__ids++).toString()
-      }
-      __todos.push(todo)
-      logger.debug(`Created new todo`, todo)
-      return todo
-    },
-
-    async update(id, data) {
-      const todo = __todos.find(x => x.id === id.toString())
-      Object.assign(todo, data)
-      logger.debug(`Updated todo ${id}`, todo)
-      return todo
-    },
-
-    async remove(id) {
-      __todos = __todos.filter(x => x.id !== id.toString())
-      logger.debug(`Removed todo ${id}`)
+    /*
+     * Function: push
+     * Description: Add data to a particular device
+     *  and create new device if it doesn't exist
+     */
+    async push(deviceid, locationdata) {
+      logger.info(JSON.stringify(locationdata, null, 2))
+      if (!(deviceid in __locationData))
+        __locationData[deviceid] = [...locationdata]
+      else
+        __locationData[deviceid] = [
+          ...__locationData[deviceid],
+          ...locationdata
+        ]
+      logger.debug(`Added new data`, locationdata)
+      return locationdata
     }
   }
 }
