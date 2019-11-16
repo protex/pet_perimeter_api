@@ -1,9 +1,9 @@
 import { throws } from 'smid'
-import Api from '../my-api.js'
+import Api from '../location-api.js'
 
 // This test only verify invariants, not interaction with dependencies.
 // That is tested with integration tests.
-describe('TodoService', () => {
+describe('perimeterApi', () => {
   describe('get', () => {
     it('throws when not found', async () => {
       const { service, devicedata } = setup()
@@ -34,16 +34,7 @@ describe('TodoService', () => {
 
 function setup() {
   const devicedata = {
-    1: [
-      { timestamp: 123, location: [1, 2] },
-      { timestamp: 124, location: [2, 9] },
-      { timestamp: 125, location: [3, 7] }
-    ],
-    2: [
-      { timestamp: 567, location: [1, 2] },
-      { timestamp: 568, location: [2, 9] },
-      { timestamp: 569, location: [3, 7] }
-    ]
+    1: [[{ lng: 1, lat: 1 }, { lng: 1, lat: 1 }, { lng: 1, lat: 1 }]]
   }
   // Mock store
   const store = {

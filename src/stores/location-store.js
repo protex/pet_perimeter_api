@@ -1,8 +1,4 @@
-/**
- * In-memory todos store.
- * For demo purposes, gets the logger injected.
- */
-export default function createTodoStore(logger) {
+export default function createLocationStore(logger) {
   // All the data for gps coordinates
   let __locationData = {}
 

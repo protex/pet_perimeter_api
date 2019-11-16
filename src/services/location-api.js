@@ -8,15 +8,15 @@ const assertId = BadRequest.makeAssert('No device id supplied')
  * Gets a todo store injected.
  */
 export default class Api {
-  constructor(todoStore) {
-    this.todoStore = todoStore
+  constructor(locationStore) {
+    this.locationStore = locationStore
   }
 
   async get(user, deviceid) {
     assertId(deviceid)
-    // If `todoStore.get()` returns a falsy value, we throw a
+    // If `locationStore.get()` returns a falsy value, we throw a
     // NotFound error with the specified message.
-    return this.todoStore
+    return this.locationStore
       .get(user, deviceid)
       .then(NotFound.makeAssert(`Data for "${deviceid}" not found`))
   }
@@ -24,6 +24,6 @@ export default class Api {
   async push(deviceid, locationdata) {
     assertId(deviceid)
     BadRequest.assert(locationdata, 'No payload given')
-    return this.todoStore.push(deviceid, locationdata)
+    return this.locationStore.push(deviceid, locationdata)
   }
 }

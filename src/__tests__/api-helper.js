@@ -17,9 +17,19 @@ export async function apiHelper() {
     client,
     // Add your app-specific methods here.
     getLocationData: (user, deviceid) =>
-      client.get(`/test/${user}/${deviceid}`).then(assertStatus(200)),
+      client.get(`/location/${user}/${deviceid}`).then(assertStatus(200)),
     pushLocationData: (deviceid, locationdata) =>
-      client.post(`/test/${deviceid}`, locationdata).then(assertStatus(201))
+      client
+        .post(`/location/${deviceid}`, locationdata)
+        .then(assertStatus(201)),
+    getPerimeterData: (user, deviceid) =>
+      client.get(`/perimeter/${user}/${deviceid}`).then(assertStatus(200)),
+    pushPerimeterData: (deviceid, perimeters) =>
+      client.post(`/perimeter/${deviceid}`, perimeters).then(assertStatus(201)),
+    updatePerimeterData: (deviceid, perimeterNumber, perimeter) =>
+      client
+        .post(`/perimeter/update/${deviceid}/${perimeterNumber}`, perimeter)
+        .then(assertStatus(204))
   }
 }
 
