@@ -39,8 +39,8 @@ export default function createLocationStore(logger) {
         __locationData[deviceid] = [...locationdata]
       else
         __locationData[deviceid] = [
-          ...__locationData[deviceid],
-          ...locationdata
+          ...locationdata,
+          ...__locationData[deviceid]
         ]
       logger.debug(`Added new data`, locationdata)
       return locationdata

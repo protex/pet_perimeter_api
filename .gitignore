@@ -5,3 +5,4 @@ dist
 coverage
 .nyc_output
 Session.vim
+.tern-port
